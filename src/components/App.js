@@ -1,40 +1,90 @@
-import React,{useState} from 'react'
+import React, { Component, useState } from "react";
+import "../styles/App.css";
+
+const relation = (str1, str2) => {
+  let common = "";
+  for (let i = 0; i < str1.length; i++) {
+    if (str2.indexOf(str1[i]) !== -1) {
+      common += str1[i];
+      str2 = str2.replace(str1[i], "");
+    }
+  }
+
+  let str1WithoutCommon = "";
+  for (let i = 0; i < str1.length; i++) {
+    if (common.indexOf(str1[i]) === -1) {
+      str1WithoutCommon += str1[i];
+    }
+  }
+
+  let str2WithoutCommon = "";
+  for (let i = 0; i < str2.length; i++) {
+    str2WithoutCommon += str2[i];
+  }
+
+  let totalLength = str1WithoutCommon.length + str2WithoutCommon.length;
+  switch (totalLength % 6) {
+    case 1:
+      return "Friends";
+    case 2:
+      return "Love";
+    case 3:
+      return "Affection";
+    case 4:
+      return "Marriage";
+    case 5:
+      return "Enemy";
+    case 0:
+      return "Siblings";
+    default:
+      return "";
+  }
+};
 
 const App = () => {
-    let arr = ["Siblings", "Friends", "Love", "Affection", "Marriage", "Enemy"]
-    const [str1, setStr1] = useState("");
-    const [str2, setStr2] = useState("");
-    const [error, setError] = useState(false);
-    const [relation, setRelation] = useState("");
+  const [str1, setStr1] = useState("");
+  const [str2, setStr2] = useState("");
+  const [relationType, setRelationType] = useState("");
 
-    const evaluateRelation = () =>{
-        if(!str1 || !str2){
-            setError(true);
-        }
-        let len = str1.length + str2.length;
-        let common = 0;
-        for(let i of str1){
-            if(str2.includes(i)) common++;
-        }
-        let ans = (len - (2 * common)) % 6;
-        setRelation(arr[ans]);
-    }
+  const handleStr1Change = (event) => {
+    setStr1(event.target.value);
+  };
 
-    const clearInput = () =>{
-        setStr1("");
-        setStr2("");
-    }
+  const handleStr2Change = (event) => {
+    setStr2(event.target.value);
+  };
 
-    return(
-        <div id="main">
-           {/* Do not remove the main div */}\
-           <input data-testid="input1" value={str1} type="text"></input>
-           <input data-testid="input2" value={str2} type="text"></input>
-           <button data-testid="calculate_relationship" onClick={evaluateRelation}>Calculate Relationship Future</button>
-           {error ? "Please Enter valid input" : <h3 data-testid="answer">{relation}</h3>}
-           <button data-testid="clear" onClick={clearInput}>Clear</button>
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setRelationType(relation(str1, str2));
+  };
+
+  return (
+    <div id="main">
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>
+            String 1:
+            <input type="text" value={str1} onChange={handleStr1Change} />
+          </label>
         </div>
-    )
-}
+        <div>
+          <label>
+            String 2:
+            <input type="text" value={str2} onChange={handleStr2Change} />
+          </label>
+        </div>
+        <button type="submit">Submit</button>
+      </form>
+      <div>
+        {relationType === "" ? (
+          <p>Please Enter valid input</p>
+        ) : (
+          <p>Relation type: {relationType}</p>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export default App;
